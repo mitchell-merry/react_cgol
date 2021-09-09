@@ -36,7 +36,6 @@ const getNeighbourCountGrid = (grid: CellType[][]): number[][] => {
 }
 
 const isAlive = (current: CellType, neighbours: number): boolean => {
-    console.log(current, neighbours);
     return current === 'dead' ? (neighbours === 3) : (neighbours === 2 || neighbours === 3);
 }
 
@@ -51,8 +50,6 @@ export const getNext = (grid: CellType[][]): CellType[][] => {
             o[row].push(r);
         }
     }
-    console.log(neighbourCountGrid);
-    console.log(o);
 
     return o;
 }

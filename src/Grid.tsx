@@ -21,10 +21,16 @@ function getGrid(width: number, height: number): CellType[][] {
     return o;
 }
 
+function copyGrid(g: any[][]): any[][] {
+    return g.map(a => a.slice());
+}
+
 export const Grid: React.FC<GridProps> = ({ width, height }) => {
     const [ grid, setGrid ] = useState<CellType[][]>(getGrid(width, height));
-    const intervalRef = useRef<NodeJS.Timeout>();
-    
+    // const intervalRef = useRef<NodeJS.Timeout>();
+    const gridHistory = useRef<CellType[][][]>([]);
+    console.log(gridHistory.current.length);
+
     // useEffect(() => {
     //     const id = setInterval(() => {
     //         setGrid(currGrid => getNext(currGrid));
@@ -32,10 +38,27 @@ export const Grid: React.FC<GridProps> = ({ width, height }) => {
     //     intervalRef.current = id;
     // }, [])
 
-    const handleKeyPress = (e: KeyboardEvent) => {
-        if(e.key !== ' ') return;
+    const addToHistory = (grid: CellType[][]): void => {
+        // TODO check if most recent is identical if so dont add
+        gridHistory.current.push(grid);
+    }
 
-        setGrid(currGrid => getNext(currGrid));
+    const advanceGOL = (): void => {
+        setGrid(currentGrid => {
+            addToHistory(copyGrid(currentGrid));
+            return getNext(currentGrid)
+        });
+    }
+
+    const handleKeyPress = (e: KeyboardEvent): void => {
+        if(e.key !== ' ') return;
+        advanceGOL();
+    }
+
+    const devanceGOL = (): void => {
+        const prev = gridHistory.current.pop();
+        if(prev === undefined) return;
+        setGrid(prev);
     }
 
     useEffect(() => {
@@ -44,17 +67,20 @@ export const Grid: React.FC<GridProps> = ({ width, height }) => {
 
     const handleClick = (rowIdx: number, colIdx: number): void => {
         setGrid(currentGrid => {
-            const newGrid: CellType[][] = currentGrid.map(a => a.slice());
-            newGrid[rowIdx][colIdx] = 'alive';
+            addToHistory(copyGrid(currentGrid));
+            const newGrid: CellType[][] = copyGrid(currentGrid);
+            newGrid[rowIdx][colIdx] = (newGrid[rowIdx][colIdx] === 'alive' ? 'dead' : 'alive');
             return newGrid;
         })
     }
 
     return <div id="grid">
+        <button onClick={(): void => {devanceGOL()}}>GO BACK!!</button>
+        <button onClick={(): void => {advanceGOL()}}>ADVANCE</button>
         {grid.map((row, rowIdx) => (
             <div className={"row"} key={rowIdx}>
                 {row.map((cellValue, colIdx) => (
-                    <div className={"cell " + cellValue} key={`${rowIdx} ${colIdx}`} onMouseDown={(e) => handleClick(rowIdx, colIdx)} />
+                    <div className={"cell " + cellValue} key={`${rowIdx} ${colIdx}`} onMouseDown={(e): void => handleClick(rowIdx, colIdx)} />
                 ))}
             </div>
         ))}
