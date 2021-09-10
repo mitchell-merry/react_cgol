@@ -1,11 +1,21 @@
-import React from 'react';
-import './App.css';
-import { Grid } from './Grid';
+import React, { useRef } from 'react';
+import styles from './App.module.scss';
+import { Sidebar } from './Sidebar/Sidebar';
+import { Grid } from './Grid/Grid';
+import { IControlFunctions } from './globals';
+
 
 function App() {
+  const controlFunctions = useRef<IControlFunctions>({
+    advance: undefined,
+    randomise: undefined,
+    reset: undefined
+  });
+  
   return (
-    <div className="App">
-      <Grid width={40} height={40} />
+    <div className={styles.App}>
+      <Grid controlFunctions={controlFunctions} />
+      <Sidebar controlFunctions={controlFunctions} />
     </div>
   );
 }

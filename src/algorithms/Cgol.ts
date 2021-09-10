@@ -1,5 +1,4 @@
-export const CELL_TYPES = ['dead', 'alive'] as const;
-export type CellType = typeof CELL_TYPES[number];
+import { CellType } from "../globals";
 
 const isOob = (grid: CellType[][], row: number, col: number): boolean => {
     return row < 0 || col < 0 || row >= grid.length || col >= grid[row].length;

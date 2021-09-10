@@ -1,0 +1,26 @@
+@import '../../globals';
+
+.tab_item {
+    font-size: 18px;
+
+    color: $colour-cell-alive;
+    background-color: $colour-cell-dead;
+    border: 2px solid $colour-cell-alive;
+    border-radius: 10px;
+
+    padding: 10px 30px;
+    transition-duration: 0.2s;
+
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
+}
+
+.tab_item:hover {
+    color: $colour-cell-dead;
+    background-color: $colour-cell-alive;
+}
+
+.selected {
+    
+}
