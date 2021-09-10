@@ -17,6 +17,8 @@ export type GridDimensions = {
 
 export interface IControlFunctions {
   advance: (() => void) | undefined;
+  undo: (() => void) | undefined;
+  clearHistory: (() => void) | undefined;
   randomise: (() => void) | undefined;
   reset: (() => void) | undefined;
 }

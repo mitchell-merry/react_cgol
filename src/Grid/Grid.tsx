@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getNext } from "../algorithms/Cgol";
 import { CellType, CELL_HEIGHT, GridDimensions, GRID_MARGIN, ICell, IControlFunctions } from "../globals";
 
@@ -13,9 +13,10 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
     const [ gridDimensions, setGridDimensions ] = useState<GridDimensions>(getWindowDimensions());
     const [ grid, setGrid ] = useState<CellType[][]>(getInitialGrid(gridDimensions));
     const [ currentDrag, setCurrentDrag ] = useState<CellType | null>(null);
+    const gridHistory = useRef<CellType[][][]>([]);
 
     // Re-write - decide on if we're doing per cell or per grid
-    const updateGrid = (cells: ICell[]): void => {
+    const updateCells = (cells: ICell[]): void => {
         if(cells.length === 0) return;
         // TODO update history
         setGrid(currentGrid => {
@@ -27,26 +28,51 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
         });
     }
 
+    const updateGrid = (newGrid: CellType[][]): void => {
+        gridHistory.current.push(grid);
+        setGrid(newGrid);
+    }
+
     const advanceGrid = (): void => {
+        gridHistory.current.push(grid);
         setGrid(currentGrid => getNext(currentGrid));
     }
 
+    const undo = (): void => {
+        const prevState = gridHistory.current.pop();
+        if(!prevState) return;
+        setGrid(prevState);
+    }
+
+    const clearHistory = (): void => {
+        gridHistory.current = [];
+    }
+
     const randomiseGrid = (): void => {
-        setGrid(getRandomGrid(gridDimensions));
+        updateGrid(getRandomGrid(gridDimensions));
+        clearHistory();
     }
 
     const resetGrid = (): void => {
-        setGrid(getInitialGrid(gridDimensions));
+        updateGrid(getInitialGrid(gridDimensions));
+        clearHistory();
+    }
+
+    const endDrag = (): void => {
+        setCurrentDrag(null);
     }
     
     controlFunctions.current.advance = advanceGrid;
+    controlFunctions.current.undo = undo;
+    controlFunctions.current.clearHistory = clearHistory;
     controlFunctions.current.randomise = randomiseGrid;
     controlFunctions.current.reset = resetGrid;
 
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>, rowIdx: number, colIdx: number): void => {
+        gridHistory.current.push(grid);
         const newDrag = grid[rowIdx][colIdx] === 'alive' ? 'dead' : 'alive';
         setCurrentDrag(newDrag);
-        updateGrid([{
+        updateCells([{
             type: newDrag, 
             row: rowIdx, 
             col: colIdx
@@ -54,7 +80,7 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
     }
 
     const handleMouseUp = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, rowIdx: number, colIdx: number): void => {
-        setCurrentDrag(null);
+        endDrag();
     }
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, rowIdx: number, colIdx: number): void => {
@@ -63,11 +89,11 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
         
         // Fixes if you hold click and then leave the grid - checks to make sure there are buttons held down on return.
         if(e.buttons === 0) {
-            setCurrentDrag(null);
+            endDrag();
             return;
         }
         
-        updateGrid([{
+        updateCells([{
             type: currentDrag, 
             row: rowIdx, 
             col: colIdx
@@ -75,7 +101,6 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
     }
 
     const handleKeyDown = (e: KeyboardEvent): void => {
-        console.log("a'")
         if(e.key !== ' ') return;
         advanceGrid();
     }

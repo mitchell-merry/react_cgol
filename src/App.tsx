@@ -8,6 +8,8 @@ import { IControlFunctions } from './globals';
 function App() {
   const controlFunctions = useRef<IControlFunctions>({
     advance: undefined,
+    undo: undefined,
+    clearHistory: undefined,
     randomise: undefined,
     reset: undefined
   });

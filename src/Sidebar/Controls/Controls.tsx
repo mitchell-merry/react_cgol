@@ -15,9 +15,9 @@ export const Controls: React.FC<ControlsProps> = ({ controlFunctions }) => {
     return <div className={cn}>
         <button onClick={() => safeCall(controlFunctions.current.advance)}>Advance</button>
         
-        <button>Undo</button>
+        <button onClick={() => safeCall(controlFunctions.current.undo)}>Undo</button>
         
-        <button>Clear History</button>
+        <button onClick={() => safeCall(controlFunctions.current.clearHistory)}>Clear History</button>
         
         <button onClick={() => safeCall(controlFunctions.current.reset)}>Reset</button>
 
