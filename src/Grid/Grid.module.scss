@@ -1,0 +1,33 @@
+@import '../globals';
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+}
+  
+.row {
+  display: flex;
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-direction: row;
+}
+  
+.cell {
+  width: $CELL_SIZE;
+  height: $CELL_SIZE;
+ 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  border: 1px solid black;
+}
+
+.dead {
+  background-color: $colour-cell-dead;
+}
+
+.active {
+  background-color: $colour-cell-alive;
+}
