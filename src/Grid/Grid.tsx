@@ -15,10 +15,19 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
     const [ currentDrag, setCurrentDrag ] = useState<CellType | null>(null);
     const gridHistory = useRef<CellType[][][]>([]);
 
+    const addHistory = (grid: CellType[][]): void => {
+        if(gridHistory.current.length >= 100) gridHistory.current.pop();
+        gridHistory.current.push(grid);
+        
+    }
+
+    const clearHistory = (): void => {
+        gridHistory.current = [];
+    }
+
     // Re-write - decide on if we're doing per cell or per grid
     const updateCells = (cells: ICell[]): void => {
         if(cells.length === 0) return;
-        // TODO update history
         setGrid(currentGrid => {
             const newGrid = copyGrid(currentGrid);
             cells.forEach(cell => {
@@ -29,12 +38,12 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
     }
 
     const updateGrid = (newGrid: CellType[][]): void => {
-        gridHistory.current.push(grid);
+        addHistory(grid);
         setGrid(newGrid);
     }
 
     const advanceGrid = (): void => {
-        gridHistory.current.push(grid);
+        addHistory(grid);
         setGrid(currentGrid => getNext(currentGrid));
     }
 
@@ -44,18 +53,14 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
         setGrid(prevState);
     }
 
-    const clearHistory = (): void => {
-        gridHistory.current = [];
-    }
-
     const randomiseGrid = (): void => {
         updateGrid(getRandomGrid(gridDimensions));
-        clearHistory();
+        // clearHistory();
     }
 
     const resetGrid = (): void => {
         updateGrid(getInitialGrid(gridDimensions));
-        clearHistory();
+        // clearHistory();
     }
 
     const endDrag = (): void => {
@@ -84,7 +89,6 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
     }
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, rowIdx: number, colIdx: number): void => {
-        console.log();
         if(currentDrag === null || currentDrag === grid[rowIdx][colIdx]) return;
         
         // Fixes if you hold click and then leave the grid - checks to make sure there are buttons held down on return.
@@ -108,7 +112,6 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
     useEffect(() => {
         document.addEventListener('keydown', handleKeyDown);
     }, []);
-
 
     return <div className={styles.grid}>
         {grid.map((row, rowIdx) => (

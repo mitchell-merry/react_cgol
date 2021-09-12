@@ -2,7 +2,7 @@
   "name": "react_cgol",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://diggitydingdong.github.io/react_cgol",
+  "homepage": "https://mitchell-merry.github.io/react_cgol",
   "dependencies": {
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
