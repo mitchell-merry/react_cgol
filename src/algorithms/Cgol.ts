@@ -4,7 +4,7 @@ const isOob = (grid: CellType[][], row: number, col: number): boolean => {
     return row < 0 || col < 0 || row >= grid.length || col >= grid[row].length;
 }
 
-const getNeighbourCountGrid = (grid: CellType[][]): number[][] => {
+const getNeighbourCountGrid = (grid: CellType[][], doWrap: boolean): number[][] => {
     const o: number[][] = [];
     for(let row = 0; row < grid.length; row++) {
         o.push([]);
@@ -24,7 +24,13 @@ const getNeighbourCountGrid = (grid: CellType[][]): number[][] => {
                 where 4 is the current cell.
             */
             for(let m = 0; m < 9; m++) {
-                const [newRow, newCol] = [row + Math.floor(m / 3)-1, col + m % 3-1];
+                let [newRow, newCol] = [row + Math.floor(m / 3)-1, col + m % 3-1];
+                
+                if(doWrap) { 
+                    newRow = (newRow+grid.length) % grid.length;
+                    newCol = (newCol+grid[row].length) % grid[row].length;
+                }
+
                 if(m !== 4 && !isOob(grid, newRow, newCol)) {
                     o[newRow][newCol]++;
                 }
@@ -38,9 +44,9 @@ const isAlive = (current: CellType, neighbours: number): boolean => {
     return current === 'dead' ? (neighbours === 3) : (neighbours === 2 || neighbours === 3);
 }
 
-export const getNext = (grid: CellType[][]): CellType[][] => {
+export const getNext = (grid: CellType[][], doWrap: boolean): CellType[][] => {
     const o: CellType[][] = [];
-    const neighbourCountGrid = getNeighbourCountGrid(grid);
+    const neighbourCountGrid = getNeighbourCountGrid(grid, doWrap);
     
     for(let row = 0; row < grid.length; row++) {
         o.push([]);

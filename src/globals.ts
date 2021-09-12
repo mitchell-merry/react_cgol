@@ -21,4 +21,5 @@ export interface IControlFunctions {
   clearHistory: (() => void) | undefined;
   randomise: (() => void) | undefined;
   reset: (() => void) | undefined;
+  doWrap: boolean;
 }

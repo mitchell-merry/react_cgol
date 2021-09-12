@@ -11,7 +11,8 @@ function App() {
     undo: undefined,
     clearHistory: undefined,
     randomise: undefined,
-    reset: undefined
+    reset: undefined,
+    doWrap: false,
   });
   
   return (

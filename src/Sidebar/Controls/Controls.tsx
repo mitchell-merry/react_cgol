@@ -22,7 +22,8 @@ export const Controls: React.FC<ControlsProps> = ({ controlFunctions }) => {
         <button onClick={() => safeCall(controlFunctions.current.reset)}>Reset</button>
 
         <button onClick={() => safeCall(controlFunctions.current.randomise)}>Randomise</button>
-        <input type="checkbox" />
+
+        <input type="checkbox" onChange={(e) => {controlFunctions.current.doWrap = e.target.checked}}/>
     </div>
 }
 

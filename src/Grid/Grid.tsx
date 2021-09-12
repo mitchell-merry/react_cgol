@@ -44,7 +44,7 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
 
     const advanceGrid = (): void => {
         addHistory(grid);
-        setGrid(currentGrid => getNext(currentGrid));
+        setGrid(currentGrid => getNext(currentGrid, controlFunctions.current.doWrap));
     }
 
     const undo = (): void => {
