@@ -1,3 +1,4 @@
+import { ICoord } from "./Sidebar/Structures/StructureData";
 
 export const CELL_TYPES = ['dead', 'alive'] as const;
 export type CellType = typeof CELL_TYPES[number];
@@ -16,10 +17,11 @@ export type GridDimensions = {
 };
 
 export interface IControlFunctions {
-  advance?: (() => void);
-  undo?: (() => void);
-  clearHistory?: (() => void);
-  randomise?: (() => void);
-  reset?: (() => void);
+  advance?: () => void;
+  undo?: () => void;
+  clearHistory?: () => void;
+  randomise?: () => void;
+  reset?: () => void;
+  loadStructure?: (cells: ICoord[]) => void;
   doWrap: boolean;
 }

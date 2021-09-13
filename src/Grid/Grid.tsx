@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
+import { createExportAssignment } from "typescript";
 import { getNext } from "../algorithms/Cgol";
 import { CellType, CELL_HEIGHT, GridDimensions, GRID_MARGIN, ICell, IControlFunctions } from "../globals";
+import { ICoord } from "../Sidebar/Structures/StructureData";
 
 import styles from './Grid.module.scss';
 var classNames = require('classnames');
@@ -13,6 +15,8 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
     const [ gridDimensions, setGridDimensions ] = useState<GridDimensions>(getWindowDimensions());
     const [ grid, setGrid ] = useState<CellType[][]>(getInitialGrid(gridDimensions));
     const [ currentDrag, setCurrentDrag ] = useState<CellType | null>(null);
+    const [ currentStructure, setCurrentStructure ] = useState<ICoord[] | null>(null);
+    const [ penPosition, setPenPosition ] = useState<ICoord | null>(null);
     const gridHistory = useRef<CellType[][][]>([]);
 
     const addHistory = (grid: CellType[][]): void => {
@@ -69,15 +73,34 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
     const endDrag = (): void => {
         setCurrentDrag(null);
     }
+
+    const loadStructure = (cells: ICoord[]): void => {
+        setCurrentStructure(cells);
+        endDrag();
+    }
     
     controlFunctions.current.advance = advanceGrid;
     controlFunctions.current.undo = undo;
     controlFunctions.current.clearHistory = clearHistory;
     controlFunctions.current.randomise = randomiseGrid;
     controlFunctions.current.reset = resetGrid;
+    controlFunctions.current.loadStructure = loadStructure;
+
+    const placeStructure = (rowIdx: number, colIdx: number) => {
+        
+        if(!currentStructure) return;
+        updateCells(currentStructure.map(c => ({row: c.row+rowIdx, col: c.col+colIdx, type: 'alive'})))
+        setCurrentStructure(null);
+    }
 
     const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>, rowIdx: number, colIdx: number): void => {
         gridHistory.current.push(grid);
+        console.log(rowIdx);
+        if(currentStructure !== null) {
+            placeStructure(rowIdx, colIdx);
+            return;
+        }
+        
         const newDrag = grid[rowIdx][colIdx] === 'alive' ? 'dead' : 'alive';
         setCurrentDrag(newDrag);
         updateCells([{
@@ -92,6 +115,8 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
     }
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, rowIdx: number, colIdx: number): void => {
+        if((penPosition===null || penPosition.row !== rowIdx || penPosition.col !== colIdx) && currentStructure !== null) setPenPosition({row: rowIdx, col:colIdx});
+
         if(currentDrag === null || currentDrag === grid[rowIdx][colIdx]) return;
         
         // Fixes if you hold click and then leave the grid - checks to make sure there are buttons held down on return.
@@ -121,9 +146,11 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
         {grid.map((row, rowIdx) => (
             <div className={styles.row} key={rowIdx}>
                 {row.map((cellValue, colIdx) => {
+                    const isHoveredWithStructure = currentStructure !== null && penPosition !== null && currentStructure?.some(c => (c.row=== rowIdx-penPosition!.row && c.col===colIdx-penPosition!.col));
                     const cellCN = classNames(styles.cell, {
                         [styles.active]: cellValue === 'alive',
-                        [styles.dead]: cellValue === 'dead'
+                        [styles.dead]: cellValue === 'dead' && !isHoveredWithStructure,
+                        [styles.hover]: cellValue === 'dead' && isHoveredWithStructure
                     })
                     
                     return <div 

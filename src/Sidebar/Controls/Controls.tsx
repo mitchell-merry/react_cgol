@@ -9,8 +9,6 @@ export interface ControlsProps {
 
 export const Controls: React.FC<ControlsProps> = ({ controlFunctions }) => {
     let cn = classNames();
-    
-    
 
     return <div className={cn}>
         <button onClick={() => safeCall(controlFunctions.current.advance)}>Advance</button>

@@ -2,8 +2,10 @@ import React from "react";
 import { IControlFunctions } from "../globals";
 import { Controls } from "./Controls/Controls";
 import styles from './Sidebar.module.scss';
+import { StructureList } from "./Structures/StructureList";
 import { TabGroup } from "./Tabs/TabGroup";
 import { ITabValues } from "./Tabs/Tabs";
+import Structures from "./Structures/StructureData";
 var classNames = require('classnames');
 
 export interface SidebarProps { 
@@ -22,7 +24,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ controlFunctions }) => {
         },
         {
             label: "Structures",
-            content: <>YO</>
+            content: <StructureList structures={Structures} controlFunctions={controlFunctions}/>
         }
     ]
 
