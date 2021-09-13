@@ -43,12 +43,15 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
     }
 
     const advanceGrid = (): void => {
-        addHistory(grid);
-        setGrid(currentGrid => getNext(currentGrid, controlFunctions.current.doWrap));
+        setGrid(currentGrid => {
+            addHistory(currentGrid);
+            return getNext(currentGrid, controlFunctions.current.doWrap)
+        });
     }
 
     const undo = (): void => {
         const prevState = gridHistory.current.pop();
+        console.log(prevState)
         if(!prevState) return;
         setGrid(prevState);
     }
@@ -106,6 +109,7 @@ export const Grid: React.FC<GridProps> = ({ controlFunctions }) => {
 
     const handleKeyDown = (e: KeyboardEvent): void => {
         if(e.key !== ' ') return;
+        e.preventDefault();
         advanceGrid();
     }
 
