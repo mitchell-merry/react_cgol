@@ -16,10 +16,10 @@ export type GridDimensions = {
 };
 
 export interface IControlFunctions {
-  advance: (() => void) | undefined;
-  undo: (() => void) | undefined;
-  clearHistory: (() => void) | undefined;
-  randomise: (() => void) | undefined;
-  reset: (() => void) | undefined;
+  advance?: (() => void);
+  undo?: (() => void);
+  clearHistory?: (() => void);
+  randomise?: (() => void);
+  reset?: (() => void);
   doWrap: boolean;
 }

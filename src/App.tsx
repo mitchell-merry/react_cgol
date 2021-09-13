@@ -6,14 +6,7 @@ import { IControlFunctions } from './globals';
 
 
 function App() {
-  const controlFunctions = useRef<IControlFunctions>({
-    advance: undefined,
-    undo: undefined,
-    clearHistory: undefined,
-    randomise: undefined,
-    reset: undefined,
-    doWrap: false,
-  });
+  const controlFunctions = useRef<IControlFunctions>({doWrap: false});
   
   return (
     <div className={styles.App}>
